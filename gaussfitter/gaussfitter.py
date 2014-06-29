@@ -198,6 +198,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
 
         Warning: Does NOT necessarily output a rotation angle between 0 and 360 degrees.
     """
+    data = data.view(np.ma.MaskedArray)
     usemoment = np.array(usemoment, dtype='bool')
     params = np.array(params, dtype='float')
     if usemoment.any() and len(params) == len(usemoment):
@@ -215,22 +216,12 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
         if params[i] > maxpars[i] and limitedmax[i]: params[i] = maxpars[i]
         if params[i] < minpars[i] and limitedmin[i]: params[i] = minpars[i]
 
-    if err is None:
-        errorfunction = lambda p: np.ravel(twodgaussian(p, circle, rotate, vheight)
-                                           (*np.indices(data.shape) - data))
-    else:
-        errorfunction = lambda p: np.ravel(twodgaussian(p, circle, rotate, vheight)
-                                           (*np.indices(data.shape) - data) / err)
-
     def mpfitfun(data, err):
-        if err is None:
-            def f(p, fjac=None):
-                return [0, np.ravel(data-twodgaussian(p, circle, rotate, vheight)
-                                         (*np.indices(data.shape)))]
-        else:
-            def f(p, fjac=None):
-                return [0, np.ravel((data-twodgaussian(p, circle, rotate, vheight)
-                                          (*np.indices(data.shape))) / err)]
+        err = err if err is not None else 1.0
+        def f(p, fjac):
+            twodg = twodgaussian(p, circle, rotate, vheight)
+            delta = (data - twodg(*np.indices(data.shape))) / err
+            return [0, delta.compressed()]
         return f
 
     parinfo = [{'n': 1, 'value': params[1], 'limits': [minpars[1], maxpars[1]],
