@@ -196,7 +196,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
             list of the best fit parameters in the same order as the
             optional input parameter `params`.
 
-        Warning: Does NOT necessarily output a rotation angle between 0 and 360 degrees.
+        The rotation angle will always be 0 <= theta < 360 degrees.
     """
     data = data.view(np.ma.MaskedArray)
     usemoment = np.array(usemoment, dtype='bool')
@@ -256,9 +256,10 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
         # like this feature implemented
         raise ValueError("I'm sorry, I haven't implemented this feature yet.")
     else:
-#        p, cov, infodict, errmsg, success = optimize.leastsq(errorfunction,\
-#                params, full_output=1)
         mp = mpfit(mpfitfun(data, err), parinfo=parinfo, quiet=quiet)
+
+    if (not circle) and rotate:
+        mp.params[-1] %= 360.0
 
     if returnmp:
         returns = (mp)
