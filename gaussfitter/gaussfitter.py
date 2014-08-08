@@ -54,9 +54,9 @@ def moments(data,circle,rotate,vheight,estimator=median,**kwargs):
     mylist = [amplitude,x,y]
     if np.isnan(width_y) or np.isnan(width_x) or np.isnan(height) or np.isnan(amplitude):
         raise ValueError("something is nan")
-    if vheight==1:
+    if vheight:
         mylist = [height] + mylist
-    if circle==0:
+    if not circle:
         mylist = mylist + [width_x,width_y]
         if rotate==1:
             mylist = mylist + [0.] #rotation "moment" is just zero...
@@ -144,57 +144,65 @@ def twodgaussian(inpars, circle=False, rotate=True, vheight=True, shape=None):
     else:
         return rotgauss
 
-def gaussfit(data,err=None,params=(),autoderiv=True,return_all=False,circle=False,
-        fixed=np.repeat(False,7),limitedmin=[False,False,False,False,True,True,True],
-        limitedmax=[False,False,False,False,False,False,True],
-        usemoment=np.array([],dtype='bool'),
-        minpars=np.repeat(0,7),maxpars=[0,0,0,0,0,0,360],
-        rotate=1,vheight=1,quiet=True,returnmp=False,
-        returnfitimage=False,**kwargs):
+def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
+             circle=False, fixed=np.repeat(False,7),
+             limitedmin=[False,False,False,False,True,True,True],
+             limitedmax=[False,False,False,False,False,False,True],
+             usemoment=np.array([],dtype='bool'), minpars=np.repeat(0,7),
+             maxpars=[0,0,0,0,0,0,360], rotate=True, vheight=True, quiet=True,
+             returnmp=False, returnfitimage=False,**kwargs):
     """
     Gaussian fitter with the ability to fit a variety of different forms of
     2-dimensional gaussian.
     
-    Input Parameters:
-        data - 2-dimensional data array
-        err=None - error array with same size as data array
-        params=[] - initial input parameters for Gaussian function.
-            (height, amplitude, x, y, width_x, width_y, rota)
-            if not input, these will be determined from the moments of the system, 
-            assuming no rotation
-        autoderiv=1 - use the autoderiv provided in the lmder.f function (the
-            alternative is to us an analytic derivative with lmdif.f: this method
-            is less robust)
-        return_all=0 - Default is to return only the Gaussian parameters.  
-                   1 - fit params, fit error
-        returnfitimage - returns (best fit params,best fit image)
-        returnmp - returns the full mpfit struct
-        circle=0 - default is an elliptical gaussian (different x, y widths),
-            but can reduce the input by one parameter if it's a circular gaussian
-        rotate=1 - default allows rotation of the gaussian ellipse.  Can remove
-            last parameter by setting rotate=0.  np.expects angle in DEGREES
-        vheight=1 - default allows a variable height-above-zero, i.e. an
-            additive constant for the Gaussian function.  Can remove first
-            parameter by setting this to 0
-        usemoment - can choose which parameters to use a moment estimation for.
-            Other parameters will be taken from params.  Needs to be a boolean
-            array.
+    Parameters
+    ----------
+    data: `numpy.ndarray`
+        2-dimensional data array
+    err: `numpy.ndarray` or None
+        error array with same size as data array.  Defaults to 1 everywhere.
+    params: (height, amplitude, x, y, width_x, width_y, rota)
+        Initial input parameters for Gaussian function.  If not input, these
+        will be determined from the moments of the system, assuming no rotation
+    autoderiv: bool
+        Use the autoderiv provided in the lmder.f function (the alternative is
+        to us an analytic derivative with lmdif.f: this method is less robust)
+    return_all: bool
+        Default is to return only the Gaussian parameters.  
+        If ``True``, return fit params & fit error
+    returnfitimage: bool
+        returns (best fit params,best fit image)
+    returnmp: bool
+        returns the full mpfit struct
+    circle: bool
+        The default is to fit an elliptical gaussian (different x, y widths),
+        but the input is reduced by one parameter if it's a circular gaussian
+    rotate: bool
+        Allow rotation of the gaussian ellipse.  Can remove
+        last parameter of input & fit by setting rotate=False.
+        Angle should be specified in degrees.
+    vheight: bool
+        Allows a variable height-above-zero, i.e. an additive constant
+        background for the Gaussian function.  Can remove the first fitter
+        parameter by setting this to ``False``
+    usemoment: `numpy.ndarray`, dtype='bool'
+        Array to choose which parameters to use a moment estimation for.  Other
+        parameters will be taken from params.
 
-    Output:
-        Default output is a set of Gaussian parameters with the same shape as
-            the input parameters
-
-        If returnfitimage=True returns a np array of a gaussian
-            contructed using the best fit parameters.
-
-        If returnmp=True returns a `mpfit` object. This object contains
-            a `covar` attribute which is the 7x7 covariance array
-            generated by the mpfit class in the `mpfit_custom.py`
-            module. It contains a `param` attribute that contains a
-            list of the best fit parameters in the same order as the
-            optional input parameter `params`.
-
-        Warning: Does NOT necessarily output a rotation angle between 0 and 360 degrees.
+    Returns
+    -------
+    parameters: list
+        The default output is a set of Gaussian parameters with the same shape
+        as the input parameters
+    fitimage: `numpy.ndarray`
+        If returnfitimage==True, the last return will be a 2D array holding the
+        best-fit model
+    mpfit: `mpfit` object
+        If ``returnmp==True`` returns a `mpfit` object. This object contains a
+        `covar` attribute which is the 7x7 covariance array generated by the
+        mpfit class in the `mpfit_custom.py` module. It contains a `param`
+        attribute that contains a list of the best fit parameters in the same
+        order as the optional input parameter `params`.
     """
     usemoment=np.array(usemoment,dtype='bool')
     params=np.array(params,dtype='float')
@@ -203,8 +211,10 @@ def gaussfit(data,err=None,params=(),autoderiv=True,return_all=False,circle=Fals
         params[usemoment] = moment[usemoment]
     elif params == [] or len(params)==0:
         params = (moments(data,circle,rotate,vheight,**kwargs))
-    if vheight==0:
-        vheight=1
+    if not vheight:
+        # If vheight is not set, we set it for sub-function calls but fix the
+        # parameter at zero
+        vheight=True
         params = np.concatenate([[0],params])
         fixed[0] = 1
 
@@ -214,19 +224,21 @@ def gaussfit(data,err=None,params=(),autoderiv=True,return_all=False,circle=Fals
         if params[i] > maxpars[i] and limitedmax[i]: params[i] = maxpars[i]
         if params[i] < minpars[i] and limitedmin[i]: params[i] = minpars[i]
 
+    # The error function generates a twodgaussian function *and* evaluates it
+    # at the data indices
     if err is None:
-        errorfunction = lambda p: np.ravel((twodgaussian(p,circle,rotate,vheight)\
-                (*np.indices(data.shape)) - data))
+        errorfunction = (lambda p: np.ravel((twodgaussian(p,circle,rotate,vheight)
+                                            (*np.indices(data.shape)) - data)))
     else:
-        errorfunction = lambda p: np.ravel((twodgaussian(p,circle,rotate,vheight)\
-                (*np.indices(data.shape)) - data)/err)
+        errorfunction = (lambda p: np.ravel((twodgaussian(p,circle,rotate,vheight)
+                                            (*np.indices(data.shape)) - data)/err))
     def mpfitfun(data,err):
         if err is None:
-            def f(p,fjac=None): return [0,np.ravel(data-twodgaussian(p,circle,rotate,vheight)\
-                    (*np.indices(data.shape)))]
+            def f(p,fjac=None): return [0,np.ravel(data-twodgaussian(p,circle,rotate,vheight)
+                                                  (*np.indices(data.shape)))]
         else:
-            def f(p,fjac=None): return [0,np.ravel((data-twodgaussian(p,circle,rotate,vheight)\
-                    (*np.indices(data.shape)))/err)]
+            def f(p,fjac=None): return [0,np.ravel((data-twodgaussian(p,circle,rotate,vheight)
+                                                   (*np.indices(data.shape)))/err)]
         return f
 
                     
@@ -235,19 +247,21 @@ def gaussfit(data,err=None,params=(),autoderiv=True,return_all=False,circle=Fals
                 {'n':2,'value':params[2],'limits':[minpars[2],maxpars[2]],'limited':[limitedmin[2],limitedmax[2]],'fixed':fixed[2],'parname':"XSHIFT",'error':0},
                 {'n':3,'value':params[3],'limits':[minpars[3],maxpars[3]],'limited':[limitedmin[3],limitedmax[3]],'fixed':fixed[3],'parname':"YSHIFT",'error':0},
                 {'n':4,'value':params[4],'limits':[minpars[4],maxpars[4]],'limited':[limitedmin[4],limitedmax[4]],'fixed':fixed[4],'parname':"XWIDTH",'error':0} ]
-    if vheight == 1:
+    if vheight:
         parinfo.insert(0,{'n':0,'value':params[0],'limits':[minpars[0],maxpars[0]],'limited':[limitedmin[0],limitedmax[0]],'fixed':fixed[0],'parname':"HEIGHT",'error':0})
-    if circle == 0:
+    if not circle:
         parinfo.append({'n':5,'value':params[5],'limits':[minpars[5],maxpars[5]],'limited':[limitedmin[5],limitedmax[5]],'fixed':fixed[5],'parname':"YWIDTH",'error':0})
         if rotate == 1:
             parinfo.append({'n':6,'value':params[6],'limits':[minpars[6],maxpars[6]],'limited':[limitedmin[6],limitedmax[6]],'fixed':fixed[6],'parname':"ROTATION",'error':0})
 
-    if autoderiv == 0:
+    if not autoderiv:
         # the analytic derivative, while not terribly difficult, is less
         # efficient and useful.  I only bothered putting it here because I was
         # instructed to do so for a class project - please ask if you would
         # like this feature implemented
-        raise ValueError("I'm sorry, I haven't implemented this feature yet.")
+        raise NotImplementedError("I'm sorry, I haven't implemented this feature yet.  "
+                                  "Given that I wrote this message in 2008, "
+                                  "it will probably never be implemented.")
     else:
 #        p, cov, infodict, errmsg, success = optimize.leastsq(errorfunction,\
 #                params, full_output=1)
@@ -256,17 +270,17 @@ def gaussfit(data,err=None,params=(),autoderiv=True,return_all=False,circle=Fals
 
     if returnmp:
         returns = (mp)
-    elif return_all == 0:
+    elif not return_all:
         returns = mp.params
-    elif return_all == 1:
+    elif return_all:
         returns = mp.params,mp.perror
     if returnfitimage:
         fitimage = twodgaussian(mp.params,circle,rotate,vheight)(*np.indices(data.shape))
         returns = (returns,fitimage)
     return returns
 
-def onedmoments(Xax,data,vheight=True,estimator=median,negamp=None,
-        veryverbose=False, **kwargs):
+def onedmoments(Xax, data, vheight=True, estimator=median, negamp=None,
+                veryverbose=False, **kwargs):
     """Returns (height, amplitude, x, width_x)
     the gaussian parameters of a 1D distribution by calculating its
     moments.  Depending on the input parameters, will only output 
