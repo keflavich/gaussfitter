@@ -144,7 +144,7 @@ def twodgaussian(inpars, circle=False, rotate=True, vheight=True, shape=None):
     else:
         return rotgauss
 
-def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
+def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
              circle=False, fixed=np.repeat(False,7),
              limitedmin=[False,False,False,False,True,True,True],
              limitedmax=[False,False,False,False,False,False,True],
@@ -167,7 +167,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
     autoderiv: bool
         Use the autoderiv provided in the lmder.f function (the alternative is
         to us an analytic derivative with lmdif.f: this method is less robust)
-    return_all: bool
+    return_error: bool
         Default is to return only the Gaussian parameters.  
         If ``True``, return fit params & fit error
     returnfitimage: bool
@@ -191,6 +191,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
 
     Returns
     -------
+    (params, [parerr], [fitimage]) | (mpfit, [fitimage])
     parameters: list
         The default output is a set of Gaussian parameters with the same shape
         as the input parameters
@@ -224,8 +225,10 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
         if params[i] > maxpars[i] and limitedmax[i]: params[i] = maxpars[i]
         if params[i] < minpars[i] and limitedmin[i]: params[i] = minpars[i]
 
+    # One time: check if error is set, otherwise fix it at 1.
+    err = err if err is not None else 1.0
+
     def mpfitfun(data, err):
-        err = err if err is not None else 1.0
         def f(p, fjac):
             twodg = twodgaussian(p, circle, rotate, vheight)
             delta = (data - twodg(*np.indices(data.shape))) / err
@@ -271,12 +274,15 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_all=False,
     if (not circle) and rotate:
         mp.params[-1] %= 360.0
 
+    mp.chi2 = mp.fnorm
+    mp.chi2n = mp.fnorm/mp.dof
+
     if returnmp:
         returns = (mp)
-    elif not return_all:
-        returns = mp.params
-    elif return_all:
+    elif return_error:
         returns = mp.params,mp.perror
+    else:
+        returns = mp.params
     if returnfitimage:
         fitimage = twodgaussian(mp.params, circle, rotate, vheight)(*np.indices(data.shape))
         returns = (returns, fitimage)
