@@ -31,7 +31,8 @@ Alternative: lmfit
 """
 
 
-def moments(data, circle, rotate, vheight, estimator=median, **kwargs):
+def moments(data, circle, rotate, vheight, estimator=median, angle_guess=45.0,
+            **kwargs):
     """Returns (height, amplitude, x, y, width_x, width_y, rotation angle)
     the gaussian parameters of a 2D distribution by calculating its
     moments.  Depending on the input parameters, will only output
@@ -59,7 +60,9 @@ def moments(data, circle, rotate, vheight, estimator=median, **kwargs):
     if not circle:
         mylist = mylist + [width_x, width_y]
         if rotate:
-            mylist = mylist + [0.]  # rotation "moment" is just zero...
+            # rotation "moment" is a little above zero to initiate the fitter
+            # with something not locked at the edge of parameter space
+            mylist = mylist + [angle_guess]
             # also, circles don't rotate.
     else:
         mylist = mylist + [width]
@@ -149,8 +152,9 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
              limitedmin=[False,False,False,False,True,True,True],
              limitedmax=[False,False,False,False,False,False,True],
              usemoment=np.array([],dtype='bool'), minpars=np.repeat(0,7),
-             maxpars=[0,0,0,0,0,0,360], rotate=True, vheight=True, quiet=True,
-             returnmp=False, returnfitimage=False,**kwargs):
+             maxpars=[0,0,0,0,0,0,180], rotate=True, vheight=True, quiet=True,
+             returnmp=False, returnfitimage=False,
+             **kwargs):
     """
     Gaussian fitter with the ability to fit a variety of different forms of
     2-dimensional gaussian.
@@ -176,7 +180,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         returns the full mpfit struct
     circle: bool
         The default is to fit an elliptical gaussian (different x, y widths),
-        but the input is reduced by one parameter if it's a circular gaussian
+        but the input is reduced by one parameter if it's a circular gaussian.
     rotate: bool
         Allow rotation of the gaussian ellipse.  Can remove
         last parameter of input & fit by setting rotate=False.
@@ -272,7 +276,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         mp = mpfit(mpfitfun(data, err), parinfo=parinfo, quiet=quiet)
 
     if (not circle) and rotate:
-        mp.params[-1] %= 360.0
+        mp.params[-1] %= 180.0
 
     mp.chi2 = mp.fnorm
     mp.chi2n = mp.fnorm/mp.dof
