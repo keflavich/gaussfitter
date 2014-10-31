@@ -34,7 +34,7 @@ def error_function_generator(xdata, ydata, error=None, model=gaussian,
 
     def error_function(params, **kwargs):
         if lmfit:
-            params = [p.value for p in params.values()]
+            params = [p.value for p in list(params.values())]
         err = (ydata - model(xdata, *params)) / error
         if sumsquares:
             return (err**2).sum()
@@ -101,7 +101,7 @@ def lmfitter(xdata, ydata, params=None, error=None, model=gaussian):
 
     result = lmfit.minimize(errfunc, parin)
 
-    return [r.value for r in parin.values()],[r.stderr for r in parin.values()]
+    return [r.value for r in list(parin.values())],[r.stderr for r in list(parin.values())]
 
 if __name__ == "__main__":
     #do some timing
@@ -111,11 +111,11 @@ if __name__ == "__main__":
     noise = np.random.randn(length) * 0.25
     err = np.ones(length)*0.25
 
-    print mpfitter(xarr,yarr+noise,[1,0,1],err)
-    print lsfitter(xarr,yarr+noise,[1,0,1],err)
-    print annealfitter(xarr,yarr+noise,[1,0,1],err)
-    print fminfitter(xarr,yarr+noise,[1,0,1],err)
-    print lmfitter(xarr,yarr+noise,[1,0,1],err)
+    print(mpfitter(xarr,yarr+noise,[1,0,1],err))
+    print(lsfitter(xarr,yarr+noise,[1,0,1],err))
+    print(annealfitter(xarr,yarr+noise,[1,0,1],err))
+    print(fminfitter(xarr,yarr+noise,[1,0,1],err))
+    print(lmfitter(xarr,yarr+noise,[1,0,1],err))
 
     function_names = ['mpfitter','lsfitter','fminfitter','lmfitter']#,'annealfitter']
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     nfits = 25
     ntries = 7
 
-    print ("%18s" % "nelements")+"".join(["%18s" % fn for fn in function_names])
+    print(("%18s" % "nelements")+"".join(["%18s" % fn for fn in function_names]))
     mins = {}
     nels = (2e1,5e1,1e2,2e2,3e2,4e2,5e2,7.5e2,1e3,2.5e3,5e3,1e4,5e4,1e5)
     for nelements in nels:
@@ -133,7 +133,7 @@ if __name__ == "__main__":
                     yarr=gaussian(xarr,%f,%f,%f); noise=np.random.randn(%i);\
                     err = np.ones(%i)*%f" % (fn, nelements, A, dx, s, nelements, nelements, n)).repeat(ntries,nfits)))
             for fn in function_names]
-        print "%17i:" % (int(nelements)) + "".join(min_i)
+        print("%17i:" % (int(nelements)) + "".join(min_i))
         mins[nelements]=min_i
 
     from pylab import *

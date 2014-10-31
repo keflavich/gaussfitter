@@ -10,10 +10,11 @@ As of January 30, 2014, gaussfitter has its own code repo on github:
     https://github.com/keflavich/gaussfitter
 
 """
+from __future__ import print_function
 import numpy as np
 from numpy.ma import median
 from numpy import pi
-from .mpfit import mpfit
+from mpfit import mpfit
 """
 Note about mpfit/leastsq:
 I switched everything over to the Markwardt mpfit routine for a few reasons,
@@ -158,7 +159,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
     """
     Gaussian fitter with the ability to fit a variety of different forms of
     2-dimensional gaussian.
-    
+
     Parameters
     ----------
     data: `numpy.ndarray`
@@ -172,7 +173,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         Use the autoderiv provided in the lmder.f function (the alternative is
         to us an analytic derivative with lmdif.f: this method is less robust)
     return_error: bool
-        Default is to return only the Gaussian parameters.  
+        Default is to return only the Gaussian parameters.
         If ``True``, return fit params & fit error
     returnfitimage: bool
         returns (best fit params,best fit image)
@@ -225,7 +226,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         fixed[0] = 1
 
     # mpfit will fail if it is given a start parameter outside the allowed range:
-    for i in xrange(len(params)):
+    for i in range(len(params)):
         if params[i] > maxpars[i] and limitedmax[i]: params[i] = maxpars[i]
         if params[i] < minpars[i] and limitedmin[i]: params[i] = minpars[i]
 
@@ -333,8 +334,8 @@ def onedmoments(Xax, data, vheight=True, estimator=median, negamp=None,
         xcen, amplitude, width_x = Xax[np.argmax(data)], Hamplitude, Hwidth_x
 
     if veryverbose:
-        print "negamp: %s  amp,width,cen Lower: %g, %g   Upper: %g, %g  Center: %g" %\
-              (negamp, Lamplitude, Lwidth_x, Hamplitude, Hwidth_x, xcen)
+        print("negamp: %s  amp,width,cen Lower: %g, %g   Upper: %g, %g  Center: %g" %\
+              (negamp, Lamplitude, Lwidth_x, Hamplitude, Hwidth_x, xcen))
     mylist = [amplitude, xcen, width_x]
     if np.isnan(width_x) or np.isnan(height) or np.isnan(amplitude):
         raise ValueError("something is nan")
@@ -396,7 +397,7 @@ def onedgaussfit(xax, data, err=None,
         if vheight is False:
             params = [height]+params
         if veryverbose:
-            print "OneD moments: h: %g  a: %g  c: %g  w: %g" % tuple(params)
+            print("OneD moments: h: %g  a: %g  c: %g  w: %g" % tuple(params))
 
     parinfo = [{'n': 0, 'value': params[0], 'limits': [minpars[0], maxpars[0]],
                 'limited': [limitedmin[0], limitedmax[0]], 'fixed': fixed[0],
@@ -420,11 +421,11 @@ def onedgaussfit(xax, data, err=None,
         raise Exception(mp.errmsg)
 
     if (not shh) or veryverbose:
-        print "Fit status: ", mp.status
+        print("Fit status: ", mp.status)
         for i, p in enumerate(mpp):
             parinfo[i]['value'] = p
-            print parinfo[i]['parname'], p, " +/- ", mpperr[i]
-        print "Chi2: ", mp.fnorm, " Reduced Chi2: ", mp.fnorm/len(data), " DOF:", len(data)-len(mpp)
+            print(parinfo[i]['parname'], p, " +/- ", mpperr[i])
+        print("Chi2: ", mp.fnorm, " Reduced Chi2: ", mp.fnorm/len(data), " DOF:", len(data)-len(mpp))
 
     return mpp, onedgaussian(xax, *mpp), mpperr, chi2
 
@@ -443,9 +444,9 @@ def n_gaussian(pars=None, a=None, dx=None, sigma=None):
     a     - amplitudes
     """
     if len(pars) % 3 == 0:
-        a = [pars[ii] for ii in xrange(0, len(pars), 3)]
-        dx = [pars[ii] for ii in xrange(1, len(pars), 3)]
-        sigma = [pars[ii] for ii in xrange(2, len(pars), 3)]
+        a = [pars[ii] for ii in range(0, len(pars), 3)]
+        dx = [pars[ii] for ii in range(1, len(pars), 3)]
+        sigma = [pars[ii] for ii in range(2, len(pars), 3)]
     elif not(len(dx) == len(sigma) == len(a)):
         raise ValueError("Wrong array lengths! dx: %i  sigma: %i  a: %i" %
                          (len(dx), len(sigma), len(a)))
@@ -527,11 +528,11 @@ def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
                 'limits': [minpars[ii], maxpars[ii]],
                 'limited': [limitedmin[ii], limitedmax[ii]], 'fixed': fixed[ii],
                 'parname': parnames[ii % 3]+str(ii % 3), 'error': ii}
-               for ii in xrange(len(params))]
+               for ii in range(len(params))]
 
     if veryverbose:
-        print "GUESSES: "
-        print "\n".join(["%s: %s" % (p['parname'], p['value']) for p in parinfo])
+        print("GUESSES: ")
+        print("\n".join(["%s: %s" % (p['parname'], p['value']) for p in parinfo]))
 
     mp = mpfit(mpfitfun(xax, data, err), parinfo=parinfo, quiet=quiet)
     mpp = mp.params
@@ -542,11 +543,11 @@ def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
         raise Exception(mp.errmsg)
 
     if not shh:
-        print "Final fit values: "
+        print("Final fit values: ")
         for i, p in enumerate(mpp):
             parinfo[i]['value'] = p
-            print parinfo[i]['parname'], p, " +/- ", mpperr[i]
-        print "Chi2: ", mp.fnorm, " Reduced Chi2: ", mp.fnorm/len(data), " DOF:", len(data)-len(mpp)
+            print(parinfo[i]['parname'], p, " +/- ", mpperr[i])
+        print("Chi2: ", mp.fnorm, " Reduced Chi2: ", mp.fnorm/len(data), " DOF:", len(data)-len(mpp))
 
     return mpp, n_gaussian(pars=mpp)(xax), mpperr, chi2
 
@@ -569,16 +570,16 @@ def collapse_gaussfit(cube, xax=None, axis=2, negamp=False, usemoments=True,
     if xax is None:
         xax = np.arange(cube.shape[0])
     starttime = time.time()
-    print "Cube shape: ", cube.shape
+    print("Cube shape: ", cube.shape)
     extremum = np.min if negamp else np.max
-    print "Fitting a total of %i spectra with peak signal above %f" %\
+    print("Fitting a total of %i spectra with peak signal above %f" %\
           ((np.abs(extremum(cube, axis=0)) > (mean_std*nsigcut)).sum(),
-           mean_std*nsigcut)
-    for i in xrange(cube.shape[1]):
+           mean_std*nsigcut))
+    for i in range(cube.shape[1]):
         t0 = time.time()
         nspec = (np.abs(extremum(cube[:,i,:], axis=0)) > (mean_std*nsigcut)).sum()
-        print "Working on row %d with %d spectra to fit" % (i, nspec),
-        for j in xrange(cube.shape[2]):
+        print("Working on row %d with %d spectra to fit" % (i, nspec), end=' ')
+        for j in range(cube.shape[2]):
             if np.abs(extremum(cube[:,i,j])) > (mean_std*nsigcut):
                 mpp, gfit, mpperr, chi2 = onedgaussfit(xax, cube[:,i,j],
                     err=np.ones(cube.shape[0])*mean_std, negamp=negamp,
@@ -593,10 +594,10 @@ def collapse_gaussfit(cube, xax=None, axis=2, negamp=False, usemoments=True,
                     amp_err[i,j] = mpperr[1]
         dt = time.time()-t0
         if nspec > 0:
-            print "in %f seconds (average: %f)" % (dt, dt/float(nspec))
+            print("in %f seconds (average: %f)" % (dt, dt/float(nspec)))
         else:
-            print "in %f seconds" % (dt)
-    print "Total time %f seconds" % (time.time()-starttime)
+            print("in %f seconds" % (dt))
+    print("Total time %f seconds" % (time.time()-starttime))
 
     if return_errors:
         return width_arr, offset_arr, amp_arr, width_err, offset_err, amp_err, chi2_arr
