@@ -19,3 +19,5 @@ of his code is included (by necessity) here.  It is modified primarily to
 remove a scipy dependency.
 
 Examples to come!  PRs welcome!
+
+Tested in Python 2.7 and 3.4
