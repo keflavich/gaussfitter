@@ -1,6 +1,13 @@
 Gaussfitter
 ===========
 
+installation (from Linux Terminal):
+``` 
+cd /tmp
+git clone https://github.com/keflavich/gaussfitter.git
+sudo python setup.py install 
+```
+
 This code is taken from agpy, where it has resided for a long time and has had
 a long, glorious history.
 
