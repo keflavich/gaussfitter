@@ -1,12 +1,19 @@
 Gaussfitter
 ===========
 
-installation (from Linux Terminal): ::
+Installation: ::
+
+   pip install https://github.com/keflavich/gaussfitter/archive/master.zip
+   
+or
+
+    pip install -e git+https://github.com/keflavich/gaussfitter.git#egg=gaussfitter
  
-   cd /tmp
+or
+
    git clone https://github.com/keflavich/gaussfitter.git
    cd gaussfitter
-   sudo python setup.py install 
+   python setup.py install 
 
 
 This code is taken from agpy, where it has resided for a long time and has had
