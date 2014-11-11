@@ -4,7 +4,9 @@ Gaussfitter
 installation (from Linux Terminal):
 ``` 
 cd /tmp
+
 git clone https://github.com/keflavich/gaussfitter.git
+
 sudo python setup.py install 
 ```
 
