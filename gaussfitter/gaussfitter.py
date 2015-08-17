@@ -276,6 +276,9 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
     else:
         mp = mpfit(mpfitfun(data, err), parinfo=parinfo, quiet=quiet)
 
+    if mp.errmsg:
+        raise Exception("MPFIT error: {0}".format(mp.errmsg))
+
     if (not circle) and rotate:
         mp.params[-1] %= 180.0
 
