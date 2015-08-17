@@ -280,7 +280,10 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         mp.params[-1] %= 180.0
 
     mp.chi2 = mp.fnorm
-    mp.chi2n = mp.fnorm/mp.dof
+    try:
+        mp.chi2n = mp.fnorm/mp.dof
+    except ZeroDivisionError:
+        mp.chi2n = np.nan
 
     if returnmp:
         returns = (mp)
