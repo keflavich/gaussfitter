@@ -1,3 +1,4 @@
+from __future__ import division,absolute_import
 import unittest
 import numpy as np
 import gaussfitter as gf

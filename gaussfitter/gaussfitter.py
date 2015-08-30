@@ -10,7 +10,7 @@ As of January 30, 2014, gaussfitter has its own code repo on github:
     https://github.com/keflavich/gaussfitter
 
 """
-from __future__ import print_function
+from __future__ import print_function,division,absolute_import
 import numpy as np
 from numpy.ma import median
 from numpy import pi
@@ -496,8 +496,8 @@ def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
        chi2
     """
 
-    if len(params) != ngauss and (len(params) / 3) > ngauss:
-        ngauss = len(params) / 3
+    if len(params) != ngauss and (len(params) // 3) > ngauss:
+        ngauss = len(params) // 3
 
     if isinstance(params, np.ndarray):
         params = params.tolist()

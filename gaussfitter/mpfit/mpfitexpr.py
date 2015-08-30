@@ -1,4 +1,4 @@
-""" 
+"""
 	Copyright (C) 2009 Sergey Koposov
 
     This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-import mpfit 
+from __future__ import division,absolute_import
+from . import mpfit
 import re
 import numpy
 import scipy
@@ -24,7 +24,7 @@ def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False,
 						imports=None, **kw):
 	"""Fit the used defined expression to the data
 	Input:
-	- func: string with the function definition 
+	- func: string with the function definition
 	- x: x vector
 	- y: y vector
 	- err: vector with the errors of y
@@ -37,20 +37,20 @@ def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False,
 	- imports: list of strings, of optional modules to be imported, required to evaluate the function
 	Example:
 	params,yfit=mpfitexpr('p[0]+p[2]*(x-p[1])',x,y,err,[0,10,1])
-	
+
 	If you need to use numpy and scipy functions in your function, then
 		you must to use the full names of these functions, e.g.:
 		numpy.sin, numpy.cos etc.
-	
+
 	This function is motivated by mpfitexpr() from wonderful MPFIT IDL package
-		written by Craig Markwardt	
-	
+		written by Craig Markwardt
+
 	"""
 
 	hash={}
 	hash['numpy']=numpy
 	hash['scipy']=scipy
-	
+
 	if imports is not None:
 		for i in imports:
 			#exec '%s=__import__("%s")'%(a,b) in globals(),locals()
@@ -63,9 +63,9 @@ def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False,
 	maxp = -1
 	for m in re.finditer(r,func):
 		curp = int(m.group(1))
-		maxp = curp if curp > maxp else maxp	
+		maxp = curp if curp > maxp else maxp
 	if check:
-		if maxp == -1: 
+		if maxp == -1:
 			raise Exception("wrong function format")
 		if maxp + 1 != len(start_params):
 			raise Exception("the length of the start_params != the length of the parameter verctor of the function")
