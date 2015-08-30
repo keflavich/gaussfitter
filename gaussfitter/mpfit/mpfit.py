@@ -410,7 +410,7 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 from __future__ import division,absolute_import
 import numpy
 from six import integer_types
-from logging import log
+import logging as log
 #
 try:
     from pyspeckit.spectrum.parinfo import ParinfoList#,Parinfo
