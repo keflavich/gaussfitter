@@ -410,12 +410,17 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 from __future__ import division,absolute_import
 import numpy
 from six import integer_types
-from astropy import log
+#
 try:
-    from pyspeckit.spectrum.parinfo import ParinfoList,Parinfo
-    haspyspeckit = True
+    from astropy import log
 except:
-    haspyspeckit = False
+    from logging import log
+#
+try:
+    from pyspeckit.spectrum.parinfo import ParinfoList#,Parinfo
+    HAS_PYSPECKIT = True
+except:
+    HAS_PYSPECKIT  = False
     pass #perhaps you're not interested in using/testing against this module
 
 #    Original FORTRAN documentation
@@ -877,7 +882,7 @@ class mpfit:
 
         # Be sure that PARINFO is of the right type
         if parinfo is not None:
-            if haspyspeckit and isinstance(parinfo,ParinfoList):
+            if HAS_PYSPECKIT and isinstance(parinfo,ParinfoList):
                 pass
             elif not isinstance(parinfo,list):
                 self.errmsg = 'ERROR: PARINFO must be a list of dictionaries.'

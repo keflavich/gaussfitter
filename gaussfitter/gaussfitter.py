@@ -54,7 +54,7 @@ def moments(data, circle, rotate, vheight, estimator=median, angle_guess=45.0,
     height = estimator(data.ravel())
     amplitude = data.max()-height
     mylist = [amplitude, x, y]
-    if (np.isnan(width_y) or np.isnan(width_x) or np.isnan(height) or np.isnan(amplitude)):
+    if np.isnan((width_y,width_x,height,amplitude)).any():
         raise ValueError("something is nan")
     if vheight:
         mylist = [height] + mylist
