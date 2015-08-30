@@ -417,7 +417,6 @@ try:
     HAS_PYSPECKIT = True
 except:
     HAS_PYSPECKIT  = False
-    pass #perhaps you're not interested in using/testing against this module
 
 #    Original FORTRAN documentation
 #    **********
