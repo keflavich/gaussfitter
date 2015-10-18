@@ -1,6 +1,7 @@
 """
 Compare speed and fit quality for a few cases using mpfit and scipy.optimize.leastsq
 """
+from __future__ import division,absolute_import
 from agpy.mpfit import mpfit
 from agpy.timer import print_timing
 from scipy.optimize import leastsq
@@ -13,11 +14,11 @@ def gaussian(x,A,dx,w, return_components=False):
     """
     Returns a 1-dimensional gaussian of form
     H+A*numpy.exp(-(x-dx)**2/(2*w**2))
-    
+
     [height,amplitude,center,width]
 
     return_components does nothing but is required by all fitters
-    
+
     """
     x = np.array(x) # make sure xarr is no longer a spectroscopic axis
     return A*np.exp(-(x-dx)**2/(2.0*w**2))
@@ -141,7 +142,7 @@ if __name__ == "__main__":
     lsmins = array([mins[n][1] for n in nels],dtype='float')
     fmmins = array([mins[n][2] for n in nels],dtype='float')
     lmfits = array([mins[n][3] for n in nels],dtype='float')
-    
+
     loglog(nels,mpmins,label='mpfit')
     loglog(nels,lsmins,label='leastsq')
     loglog(nels,fmmins,label='fmin')
