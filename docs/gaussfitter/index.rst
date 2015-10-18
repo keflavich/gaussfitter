@@ -7,7 +7,7 @@ Documentation for gaussfitter.
 Simple Example
 --------------
 
-.. code-block::
+.. code-block:: python
 
    from astropy.io import fits
    from astropy import wcs
@@ -34,4 +34,4 @@ Simple Example
 Reference/API
 =============
 
-.. automodapi:: packagename
+.. automodapi:: gaussfitter

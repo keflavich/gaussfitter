@@ -34,7 +34,8 @@ Alternative: lmfit
 
 def moments(data, circle, rotate, vheight, estimator=median, angle_guess=45.0,
             **kwargs):
-    """Returns (height, amplitude, x, y, width_x, width_y, rotation angle)
+    """
+    Returns (height, amplitude, x, y, width_x, width_y, rotation angle)
     the gaussian parameters of a 2D distribution by calculating its
     moments.  Depending on the input parameters, will only output
     a subset of the above.
@@ -71,35 +72,42 @@ def moments(data, circle, rotate, vheight, estimator=median, angle_guess=45.0,
 
 
 def twodgaussian(inpars, circle=False, rotate=True, vheight=True, shape=None):
-    """Returns a 2d gaussian function of the form:
-        x' = np.cos(rota) * x - np.sin(rota) * y
-        y' = np.sin(rota) * x + np.cos(rota) * y
-        (rota should be in degrees)
-        g = b + a * np.exp ( - ( ((x-center_x)/width_x)**2 +
-        ((y-center_y)/width_y)**2 ) / 2 )
+    """
+    Returns a 2d gaussian function of the form:
+    x' = np.cos(rota) * x - np.sin(rota) * y
+    y' = np.sin(rota) * x + np.cos(rota) * y
+    (rota should be in degrees)
+    g = b + a * np.exp ( - ( ((x-center_x)/width_x)**2 +
+    ((y-center_y)/width_y)**2 ) / 2 )
 
-        inpars = [b,a,center_x,center_y,width_x,width_y,rota]
-                 (b is background height, a is peak amplitude)
+    inpars = [b,a,center_x,center_y,width_x,width_y,rota]
+             (b is background height, a is peak amplitude)
 
-        where x and y are the input parameters of the returned function,
-        and all other parameters are specified by this function
+    where x and y are the input parameters of the returned function,
+    and all other parameters are specified by this function
 
-        However, the above values are passed by list.  The list should be:
-        inpars = (height,amplitude,center_x,center_y,width_x,width_y,rota)
+    However, the above values are passed by list.  The list should be:
+    inpars = (height,amplitude,center_x,center_y,width_x,width_y,rota)
 
-        You can choose to ignore / neglect some of the above input parameters
-            unp.sing the following options:
-            circle=0 - default is an elliptical gaussian (different x, y
-                widths), but can reduce the input by one parameter if it's a
-                circular gaussian
-            rotate=1 - default allows rotation of the gaussian ellipse.  Can
-                remove last parameter by setting rotate=0
-            vheight=1 - default allows a variable height-above-zero, i.e. an
-                additive constant for the Gaussian function.  Can remove first
-                parameter by setting this to 0
-            shape=None - if shape is set (to a 2-parameter list) then returns
-                an image with the gaussian defined by inpars
-        """
+    You can choose to ignore / neglect some of the above input parameters using
+    the following options:
+
+    Parameters
+    ----------
+    circle : bool
+        default is an elliptical gaussian (different x, y widths), but can
+        reduce the input by one parameter if it's a circular gaussian
+    rotate : bool
+        default allows rotation of the gaussian ellipse.  Can
+        remove last parameter by setting rotate=0
+    vheight : bool
+        default allows a variable height-above-zero, i.e. an
+        additive constant for the Gaussian function.  Can remove first
+        parameter by setting this to 0
+    shape : tuple
+        if shape is set (to a 2-parameter list) then returns an image with the
+        gaussian defined by inpars
+    """
     inpars_old = inpars
     inpars = list(inpars)
     if vheight:
@@ -365,24 +373,35 @@ def onedgaussfit(xax, data, err=None,
                  quiet=True, shh=True, veryverbose=False,
                  vheight=True, negamp=False, usemoments=False):
     """
-    Inputs:
-       xax - x axis
-       data - y axis
-       err - error corresponding to data
+    Parameters
+    ----------
+    xax : np.array
+        x axis
+    data : np.array
+        y axis
+    err : np.array
+        error corresponding to data
+    params : tuple
+        Fit parameters: Height of background, Amplitude, Shift, Width
+    fixed : bool
+        Is parameter fixed?
+    limitedmin/minpars : tuple
+        set lower limits on each parameter (default: width>0)
+    limitedmax/maxpars : tuple
+        set upper limits on each parameter
+    quiet : bool
+        should MPFIT output each iteration?
+    shh : bool
+        output final parameters?
+    usemoments : bool
+        replace default parameters with moments
 
-       params - Fit parameters: Height of background, Amplitude, Shift, Width
-       fixed - Is parameter fixed?
-       limitedmin/minpars - set lower limits on each parameter (default: width>0)
-       limitedmax/maxpars - set upper limits on each parameter
-       quiet - should MPFIT output each iteration?
-       shh - output final parameters?
-       usemoments - replace default parameters with moments
-
-    Returns:
-       Fit parameters
-       Model
-       Fit errors
-       chi2
+    Returns
+    -------
+    Fit parameters
+    Model
+    Fit errors
+    chi2
     """
 
     def mpfitfun(x, y, err):
