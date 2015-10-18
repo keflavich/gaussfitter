@@ -4,10 +4,8 @@ gaussfitter
 ===========
 .. codeauthor:: Adam Ginsburg <adam.g.ginsburg@gmail.com> 3/17/08
 
-Latest version available at <http://code.google.com/p/agpy/source/browse/trunk/agpy/gaussfitter.py>
-
-As of January 30, 2014, gaussfitter has its own code repo on github:
-    https://github.com/keflavich/gaussfitter
+Latest version available at <https://github.com/keflavich/gaussfitter>, where
+it was moved from google code on January 30, 2014
 
 """
 from __future__ import print_function,division,absolute_import
