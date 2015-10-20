@@ -22,7 +22,7 @@ Simple Example
    # cut out a subset containing a gaussian & fit it
    x0, xrange = 50, 40
    y0, yrange = 60, 40
-   height,amp,xfit,yfit,xwid,ywid,angle) = gaussfitter(data[y0:y0+yrange, x0:x0+xrange])
+   height,amp,xfit,yfit,xwid,ywid,angle = gaussfitter(data[y0:y0+yrange, x0:x0+xrange])
 
    # convert back to the original file's pixel units
    xc, yc = xfit+x0, yfit+y0
