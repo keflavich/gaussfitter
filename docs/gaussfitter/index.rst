@@ -57,7 +57,7 @@ Another Simple Example
 An example comparing with astropy's modeling
 --------------------------------------------
 
-.. code-block::
+.. code-block:: python
 
     from astropy.io import fits
     import numpy as np
