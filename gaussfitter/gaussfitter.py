@@ -8,7 +8,8 @@ Latest version available at <https://github.com/keflavich/gaussfitter>, where
 it was moved from google code on January 30, 2014
 
 """
-from __future__ import print_function,division,absolute_import
+from __future__ import print_function, division, absolute_import
+
 import numpy as np
 from numpy.ma import median
 from numpy import pi
@@ -484,7 +485,8 @@ def n_gaussian(pars=None, a=None, dx=None, sigma=None):
 
 def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
                   fixed=[False, False, False], limitedmin=[False, False, True],
-                  limitedmax=[False, False, False], minpars=[0, 0, 0], maxpars=[0, 0, 0],
+                  limitedmax=[False, False, False], minpars=[0, 0, 0],
+                  maxpars=[0, 0, 0],
                   quiet=True, shh=True, veryverbose=False):
     """
     An improvement on onedgaussfit.  Lets you fit multiple gaussians.
@@ -498,11 +500,10 @@ def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
      These parameters need to have length = 3*ngauss.  If ngauss > 1 and length = 3, they will
      be replicated ngauss times, otherwise they will be reset to defaults:
        params - Fit parameters: [amplitude, offset, width] * ngauss
-              If len(params) % 3 == 0, ngauss will be set to len(params) / 3
+                If len(params) % 3 == 0, ngauss will be set to len(params) / 3
        fixed - Is parameter fixed?
        limitedmin/minpars - set lower limits on each parameter (default: width>0)
        limitedmax/maxpars - set upper limits on each parameter
-
        quiet - should MPFIT output each iteration?
        shh - output final parameters?
 
@@ -511,6 +512,7 @@ def multigaussfit(xax, data, ngauss=1, err=None, params=[1, 0, 1],
        Model
        Fit errors
        chi2
+
     """
 
     if len(params) != ngauss and (len(params) // 3) > ngauss:
