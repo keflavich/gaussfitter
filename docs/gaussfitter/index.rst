@@ -91,3 +91,4 @@ Reference/API
 =============
 
 .. automodapi:: gaussfitter
+    :no-heading:

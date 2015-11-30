@@ -43,6 +43,10 @@ nosetests.xml
 coverage.xml
 *,cover
 
+# Other generated files
+*/version.py
+*/cython_version.py
+
 # Translations
 *.mo
 *.pot
@@ -52,6 +56,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+docs/api
 
 # PyBuilder
 target/
