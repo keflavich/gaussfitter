@@ -11,8 +11,10 @@ from setuptools import setup
 #A dirty hack to get around some early import/configurations ambiguities
 if sys.version_info[0] >= 3:
     import builtins
+    from distutils.config import RawConfigParser as ConfigParser
 else:
     import __builtin__ as builtins
+    from distutils.config import ConfigParser
 builtins._ASTROPY_SETUP_ = True
 
 from astropy_helpers.setup_helpers import (
@@ -21,8 +23,7 @@ from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
 
 # Get some values from the setup.cfg
-from distutils import config
-conf = config.ConfigParser()
+conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
