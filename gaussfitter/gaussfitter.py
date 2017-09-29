@@ -216,7 +216,7 @@ def gaussfit(data, err=None, params=(), autoderiv=True, return_error=False,
         attribute that contains a list of the best fit parameters in the same
         order as the optional input parameter `params`.
     """
-    data = data.view(np.ma.MaskedArray)
+    data = data.view(np.ma.MaskedArray).view('float')
     usemoment = np.array(usemoment, dtype='bool')
     params = np.array(params, dtype='float')
     if usemoment.any() and len(params) == len(usemoment):
