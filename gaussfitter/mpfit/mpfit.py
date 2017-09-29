@@ -407,13 +407,13 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
    August, 2002.  Mark Rivers
    Converted from Numeric to numpy (Sergey Koposov, July 2008)
 """
-from __future__ import division,absolute_import
+from __future__ import division, absolute_import
 import numpy
-from six import integer_types
+from astropy.extern.six import integer_types
 import logging as log
 #
 try:
-    from pyspeckit.spectrum.parinfo import ParinfoList#,Parinfo
+    from pyspeckit.spectrum.parinfo import ParinfoList
     HAS_PYSPECKIT = True
 except:
     HAS_PYSPECKIT  = False
