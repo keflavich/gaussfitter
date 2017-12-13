@@ -45,11 +45,13 @@ def moments(data, circle, rotate, vheight, estimator=median, angle_guess=45.0,
     Y, X = np.indices(data.shape)  # python convention: reverse x,y np.indices
     y = np.argmax((X*np.abs(data)).sum(axis=1)/total)
     x = np.argmax((Y*np.abs(data)).sum(axis=0)/total)
+
     col = data[int(y), :]
-    # FIRST moment, not second!
-    width_x = np.sqrt(np.abs((np.arange(col.size)-y)*col).sum() / np.abs(col).sum())
+    width_x = np.sqrt(np.abs((np.arange(col.size)-y)**2*col).sum() / np.abs(col).sum())
+
     row = data[:, int(x)]
-    width_y = np.sqrt(np.abs((np.arange(row.size)-x)*row).sum() / np.abs(row).sum())
+    width_y = np.sqrt(np.abs((np.arange(row.size)-x)**2*row).sum() / np.abs(row).sum())
+
     width = (width_x + width_y) / 2.
     height = estimator(data.ravel())
     amplitude = data.max()-height
