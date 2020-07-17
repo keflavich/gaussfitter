@@ -409,7 +409,7 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 """
 from __future__ import division, absolute_import
 import numpy
-from astropy.extern.six import integer_types
+from six import integer_types
 import logging as log
 #
 try:
